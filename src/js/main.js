@@ -110,3 +110,60 @@ startButton.addEventListener('click', () => {
 stopButton.addEventListener('click', () => {
   stopRecording([videoStreamState, audioStreamState]);
 }, false);
+3;
+
+// Haydeh
+const mouseEvents = () => {
+  let moved, clicked, startPosition, endPosition, element;
+
+  let mousedownListener = (event) => {
+    const x = event.pageX;
+    const y = event.pageY;
+    startPosition = {x, y};
+    clicked = true;
+  };
+
+  let mousemoveListener = () => {
+    if (clicked) {
+      if (!moved) {
+        element = createElement();
+        element.style.backgroundColor = 'black';
+        console.log({element});
+      }
+      moved = true;
+    }
+  };
+
+  let mouseupListener = (event) => {
+    const x = event.pageX;
+    const y = event.pageY;
+    endPosition = {x, y};
+    if (moved && clicked) {
+      console.log({startPosition, endPosition});
+    } else {
+      console.log('not moved');
+    }
+    moved = false;
+    clicked = false;
+  };
+
+  document.addEventListener('mousedown', mousedownListener);
+  document.addEventListener('mousemove', mousemoveListener);
+  document.addEventListener('mouseup', mouseupListener);
+
+  // document.addEventListener('mouseup', upListener)
+
+  // release memory
+  // document.removeEventListener('mousedown', downListener)
+  // document.removeEventListener('mousemove', moveListener)
+  // document.removeEventListener('mouseup', upListener)
+};
+
+mouseEvents();
+
+const createElement = () => {
+  const element = document.createElement('div');
+  element.setAttribute('id', `new-mask-element-${Math.random().toString(16).slice(2)}`);
+  document.append(element);
+  return element;
+};
