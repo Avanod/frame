@@ -114,7 +114,7 @@ stopButton.addEventListener('click', () => {
 
 // Haydeh
 const mouseEvents = () => {
-  let moved, clicked, startPosition, endPosition, element;
+  let moved, clicked, startPosition, element;
 
   let mousedownListener = (event) => {
     const x = event.pageX;
@@ -123,26 +123,32 @@ const mouseEvents = () => {
     clicked = true;
   };
 
-  let mousemoveListener = () => {
+  let mousemoveListener = (event) => {
+    const x = event.pageX;
+    const y = event.pageY;
     if (clicked) {
-      if (!moved) {
-        element = createElement();
-        element.style.backgroundColor = 'black';
-        console.log({element});
-      }
+      event.preventDefault();
+      if (!moved) element = createElement();
+      if (!element) return;
+      // Style
+      //// Background color of element
+      element.style.backgroundColor = 'black';
+      //// CSS position of element
+      element.style.position = 'absolute';
+      //// Position of element
+      element.style.top = `${startPosition.y < y ? startPosition.y : y}px`;
+      element.style.right = `${startPosition.x < x ? startPosition.x : x}px`;
+      element.style.bottom = `${y < startPosition.y ? y : startPosition.y}px`;
+      element.style.left = `${x < startPosition.x ? x : startPosition.x}px`;
+      //// Width and height of element
+      element.style.width = `${startPosition.x > x ? startPosition.x - x : x - startPosition.x}px`;
+      element.style.height = `${startPosition.y > y ? startPosition.y - y : y - startPosition.y}px`;
+      ////////////////////////////////////////////
       moved = true;
     }
   };
 
-  let mouseupListener = (event) => {
-    const x = event.pageX;
-    const y = event.pageY;
-    endPosition = {x, y};
-    if (moved && clicked) {
-      console.log({startPosition, endPosition});
-    } else {
-      console.log('not moved');
-    }
+  let mouseupListener = () => {
     moved = false;
     clicked = false;
   };
@@ -163,7 +169,9 @@ mouseEvents();
 
 const createElement = () => {
   const element = document.createElement('div');
-  element.setAttribute('id', `new-mask-element-${Math.random().toString(16).slice(2)}`);
-  document.append(element);
+  element.setAttribute('id', `mask-element-${Math.random().toString(16).slice(2)}`);
+  element.addEventListener('click', () => removeElement(element));
+  document.body.appendChild(element);
   return element;
 };
+const removeElement = (element) => element.remove();
