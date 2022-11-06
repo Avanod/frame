@@ -21,6 +21,35 @@
 //---------------------------------------------
 
 body {
+    [id^=mask-element] {
+        .close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 16px;
+            height: 16px;
+            transform: translate(6px, -6px) rotate(45deg);
+            border: 1px solid black;
+            background-color: white;
+            border-radius: 50%;
+            color: black;
+            font-size: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: all .3s ease;
+            cursor: pointer;
+        }
+
+        &:hover {
+            .close {
+                visibility: visible;
+                opacity: 1;
+            }
+        }
+    }
 }
 
 //---------------------------------------------
