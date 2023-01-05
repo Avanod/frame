@@ -45,9 +45,9 @@ class ScreenRecorder {
     return Promise.all([stopped]).then(() => data);
   };
   // Stop recording function
-  stopRecording = (streams) => {
+  stopRecording = () => {
     // Stop every track of each stream
-    streams.forEach(stream => stream.getTracks().forEach((track) => track.stop()));
+    [this.videoStreamState, this.audioStreamState].forEach(stream => stream.getTracks().forEach((track) => track.stop()));
   };
   // Create mixed stream from display media and user media
   createStream = async () => {
@@ -64,7 +64,7 @@ class ScreenRecorder {
   };
   // Start get permission
   start = () => {
-    const stopRecording = () => this.stopRecording([this.videoStreamState, this.audioStreamState]);
+    const stopRecording = () => this.stopRecording();
     const mimeType = this.mimeType;
     this.createStream()
         // Create recorded chunks and wait for stop
@@ -72,7 +72,7 @@ class ScreenRecorder {
           // Check if stream is stopped with browser button
           stream.getVideoTracks()[0].onended = () => stopRecording();
           // Create float element
-          createFloatingElement().then((response) => /* Start timer */ runTimer(response, this.observeTime));
+          createFloatingElement(()=> this.stopRecording()).then((response) => /* Start timer */ runTimer(response, this.observeTime));
           return this.startRecording(stream);
         })
         // Create Blob and video file
@@ -100,10 +100,10 @@ class ScreenRecorder {
     // Start Stream
     this.startButton.addEventListener('click', () => this.start(), false);
     // Stop Stream
-    this.stopButton.addEventListener('click', () => this.stopRecording([this.videoStreamState, this.audioStreamState]), false);
+    this.stopButton.addEventListener('click', () => this.stopRecording(), false);
   };
   observeTime = ({minutes}) => {
-    if (minutes === 2) this.stopRecording([this.videoStreamState, this.audioStreamState]);
+    if (minutes === 2) this.stopRecording();
   };
 }
 
