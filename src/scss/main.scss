@@ -22,6 +22,7 @@
 
 body {
     [id^=mask-element] {
+        border-radius: 6px;
         .close {
             position: absolute;
             top: 0;

@@ -1,12 +1,9 @@
 // Load Styles
 import '../scss/main.scss';
-
+import ScreenMask from './screenMask.js';
 // Declare Elements
-const preview = document.getElementById('preview');
-const recording = document.getElementById('recording');
 const startButton = document.getElementById('startButton');
 const stopButton = document.getElementById('stopButton');
-const downloadButton = document.getElementById('downloadButton');
 
 // Declare constraints
 const displayMediaConstraints = {
@@ -73,28 +70,21 @@ async function createStream() {
 // Start Stream
 startButton.addEventListener('click', () => {
   createStream()
-  // Get stream and show preview
-  .then((stream) => {
-    // Show stream on preview box
-    preview.srcObject = stream;
-    // Add stream to download button
-    downloadButton.href = stream;
-    // Check prefix for Firefox
-    preview.captureStream = preview.captureStream || preview.mozCaptureStream;
-    return new Promise((resolve) => preview.onplaying = resolve);
-  })
   // Create recorded chunks and wait for stop
-  .then(() => startRecording(preview.captureStream()))
+  .then((stream) =>{
+    // Check if stream is stopped with browser button
+    stream.getVideoTracks()[0].onended = function () {
+      stopRecording([videoStreamState, audioStreamState])
+    };
+    return startRecording(stream)
+  })
   // Create Blob and video file
   .then((recordedChunks) => {
     // Create Blob
     const recordedBlob = new Blob(recordedChunks, {type: mimeType});
-    // Create URL for preview box
-    recording.src = URL.createObjectURL(recordedBlob);
-    // Add URL to download button
-    downloadButton.href = recording.src;
-    // Name of downloaded file
-    downloadButton.download = 'RecordedVideo.webm';
+    console.log('here three')
+    // Test of File
+    saveData(recordedBlob, 'my-file');
     console.log(`Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
   })
   .catch((error) => {
@@ -111,83 +101,23 @@ stopButton.addEventListener('click', () => {
   stopRecording([videoStreamState, audioStreamState]);
 }, false);
 
-// Haydeh
-const mouseEvents = () => {
-  let moved, clicked, startPosition, element;
-  let mousedownListener = (event) => {
-    const x = event.pageX;
-    const y = event.pageY;
-    startPosition = {x, y};
-    clicked = true;
+/*
+ *
+ * Test File
+ * */
+const saveData = (function () {
+  const a = document.createElement("a");
+  document.body.appendChild(a);
+  a.style.display = 'none';
+  return function (recordedBlob, fileName) {
+    const url = URL.createObjectURL(recordedBlob);
+    a.href = url;
+    // Name of downloaded file
+    a.download = `${fileName}.webm`;
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
+}());
 
-  let mousemoveListener = (event) => {
-    const x = event.pageX;
-    const y = event.pageY;
-    const innerWidth = window.innerWidth;
-    const innerHeight = window.innerHeight;
-    if (clicked) {
-      event.preventDefault();
-      if (!moved) element = createElement();
-      if (!element) return;
-      console.log({x, innerWidth});
-      console.log({y, innerHeight});
-      // Style
-      //// Background color of element
-      element.style.backgroundColor = 'black';
-      //// CSS position of element
-      element.style.position = 'absolute';
-      //// Position of element
-      element.style.top = `${startPosition.y < y ? startPosition.y : (y < 5 ? 5 : y)}px`;
-      element.style.right = `${startPosition.x < x ? startPosition.x : (x > innerWidth ? innerWidth - 5 : x)}px`;
-      element.style.bottom = `${y < startPosition.y ? startPosition.y : (y > innerHeight ? innerHeight - 5 : y)}px`;
-      element.style.left = `${x < 5 ? 5 : (x < startPosition.x ? x : startPosition.x)}px`;
-      //// Width and height of element
-      element.style.width = `${startPosition.x > x ? (x < 0 ? startPosition.x - 5 : startPosition.x - x) : (x > innerWidth ? innerWidth - startPosition.x - 5 : x - startPosition.x)}px`;
-      element.style.height = `${startPosition.y > y ? (y < 0 ? startPosition.y - 5 : startPosition.y - y) : (y > innerHeight ? innerHeight - startPosition.y - 5 :  y - startPosition.y)}px`;
-      ////////////////////////////////////////////
-      console.log(startPosition.x > x ? (x < 0 ? startPosition.x - 5 : startPosition.x - x) : (x > innerWidth ? innerWidth - startPosition.x - 5 : x - startPosition.x))
-      console.log(startPosition.y > y ? (y < 0 ? startPosition.y - 5 : startPosition.y - y) : (y > innerHeight ? innerHeight - startPosition.y - 5 :  y - startPosition.y))
-      moved = true;
-    }
-  };
-
-  let mouseupListener = () => {
-    moved = false;
-    clicked = false;
-  };
-
-  document.addEventListener('mousedown', mousedownListener);
-  document.addEventListener('mousemove', mousemoveListener);
-  document.addEventListener('mouseup', mouseupListener);
-
-  // document.addEventListener('mouseup', upListener)
-
-  // release memory
-  // document.removeEventListener('mousedown', downListener)
-  // document.removeEventListener('mousemove', moveListener)
-  // document.removeEventListener('mouseup', upListener)
-};
-
-mouseEvents();
-
-// Create element
-const createElement = () => {
-  // Create elements
-  const element = document.createElement('div');
-  const close = document.createElement('div');
-  close.innerText = '✖';
-  // Set attributes
-  close.setAttribute('class', 'close');
-  element.setAttribute('id', `mask-element-${Math.random().toString(16).slice(2)}`);
-  // Add event listener to close
-  close.addEventListener('click', () => removeElement(element));
-  // Append close to element
-  element.appendChild(close);
-  // Append element to body
-  document.body.appendChild(element);
-  return element;
-};
-
-// Remove element
-const removeElement = (element) => element.remove();
+// Screen Mask
+ScreenMask.init();
