@@ -70,10 +70,7 @@ class ScreenRecorder {
           // Check if stream is stopped with browser button
           stream.getVideoTracks()[0].onended = () => stopRecording();
           // Create float element
-          createFloatingElement().then((response) => {
-            // Start timer
-            runTimer(response[1], this.observeTime)
-          });
+          createFloatingElement().then((response) => /* Start timer */ runTimer(response, this.observeTime));
           return this.startRecording(stream);
         })
         // Create Blob and video file

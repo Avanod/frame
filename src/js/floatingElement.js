@@ -2,7 +2,7 @@
 const element = document.createElement('div');
 // Create timer element
 const timerElement = document.createElement('span');
-export const createFloatingElement = async () => {
+const finalizedElements = async () =>{
   // Finalized wrapper
   const finalizedWrapper = new Promise((resolve) => {
     // Wrapper styles
@@ -34,6 +34,10 @@ export const createFloatingElement = async () => {
     resolve(true);
   });
   return Promise.all([finalizedWrapper, finalizedTimer, appendToBody]);
+}
+export const createFloatingElement = async () => {
+  // Return created element
+  return new Promise((resolve) => finalizedElements().then(response => resolve(response[1])));
 };
 
 export const destroyFloatingElement = () => {
