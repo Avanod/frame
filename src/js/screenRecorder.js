@@ -1,10 +1,18 @@
+import {runTimer, stopTimer} from './timer.js';
+
 class ScreenRecorder {
   constructor(options) {
     this.startButtonId = options?.startButtonId ?? 'startButton';
     this.stopButtonId = options?.stopButtonId ?? 'stopButton';
     // Declare constraints
     this.displayMediaConstraints = options?.displayMediaConstraints ?? {audio: true, video: true};
-    this.userMediaConstraints = options?.userMediaConstraints ?? {audio: {sampleSize: 100, frameRate: {max: 30}, channelCount: 2}};
+    this.userMediaConstraints = options?.userMediaConstraints ?? {
+      audio: {
+        sampleSize: 100,
+        frameRate: {max: 30},
+        channelCount: 2,
+      },
+    };
     // Declare mime type
     this.mimeType = options?.mimeType ?? 'video/webm';
     // Declare Elements
@@ -16,6 +24,7 @@ class ScreenRecorder {
   audioStreamState;
   // Start recording function
   startRecording = (stream) => {
+    runTimer();
     // Create a media recorder
     const recorder = new MediaRecorder(stream);
     // The stream data is stored in this array
@@ -24,13 +33,11 @@ class ScreenRecorder {
     recorder.ondataavailable = (event) => data.push(event.data);
     // Start media recorder
     recorder.start();
-
     // Check if stream is stopped
     let stopped = new Promise((resolve, reject) => {
       recorder.onstop = resolve;
       recorder.onerror = (event) => reject(event.name);
     });
-
     // When stream is stopped, return data
     return Promise.all([stopped]).then(() => data);
   };
@@ -52,19 +59,7 @@ class ScreenRecorder {
     // Return mixed stream
     return this.videoStreamState;
   };
-  saveData = (function () {
-    const a = document.createElement('a');
-    document.body.appendChild(a);
-    a.style.display = 'none';
-    return function (recordedBlob, fileName) {
-      const url = URL.createObjectURL(recordedBlob);
-      a.href = url;
-      // Name of downloaded file
-      a.download = `${fileName}.webm`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    };
-  }());
+  // Start get permission
   start = () => {
     const stopRecording = () => this.stopRecording([this.videoStreamState, this.audioStreamState]);
     const saveData = (recordedBlob, fileName) => this.saveData(recordedBlob, fileName);
@@ -73,13 +68,18 @@ class ScreenRecorder {
         // Create recorded chunks and wait for stop
         .then((stream) => {
           // Check if stream is stopped with browser button
-          stream.getVideoTracks()[0].onended = function () {
-            stopRecording();
-          };
+          stream.getVideoTracks()[0].onended = () => stopRecording();
+          // Create float element
+          this.createFloatingElement().then((response) => {
+            // Start timer
+            runTimer(response[1], this.observeTime)
+          });
           return this.startRecording(stream);
         })
         // Create Blob and video file
         .then((recordedChunks) => {
+          // Stop timer
+          stopTimer();
           // Create Blob
           const recordedBlob = new Blob(recordedChunks, {type: mimeType});
           // Test of File
@@ -94,13 +94,68 @@ class ScreenRecorder {
           }
         });
   };
+  // Save video
+  saveData = (function () {
+    const a = document.createElement('a');
+    document.body.appendChild(a);
+    a.style.display = 'none';
+    return function (recordedBlob, fileName) {
+      const url = URL.createObjectURL(recordedBlob);
+      a.href = url;
+      // Name of downloaded file
+      a.download = `${fileName}.webm`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    };
+  }());
+  // Create floating element
+  createFloatingElement = async () => {
+    // Create wrapper element
+    const element = document.createElement('div');
+    // Create timer element
+    const timer = document.createElement('span');
+    // Finalized wrapper
+    const finalizedWrapper = new Promise((resolve) => {
+      // Wrapper styles
+      element.style.position = 'fixed';
+      element.style.left = '25px';
+      element.style.bottom = '25px';
+      element.style.height = '25px';
+      element.style.backgroundColor = 'rgba(0, 0, 0, .75)';
+      element.style.border = '1px solid rgba(255, 255, 255, 1)';
+      element.style.borderRadius = '2px';
+      element.style.padding = '0 4px';
+      element.style.display = 'flex';
+      element.style.alignItems = 'center';
+      element.style.color = 'white';
+      element.style.fontFamily = '"Roboto mono",monospace';
+      element.style.fontSize = '14px';
+      resolve(element)
+    });
+    // Finalized timer
+    const finalizedTimer = new Promise((resolve) => {
+      timer.setAttribute('id', 'rs-timer');
+      timer.innerText = '00:00:000';
+      element.appendChild(timer);
+      resolve(timer)
+    });
+    // Append wrapper to body
+    const appendToBody = new Promise((resolve) => {
+      document.body.appendChild(element)
+      resolve(true)
+    });
+    return Promise.all([finalizedWrapper, finalizedTimer, appendToBody]);
+  };
+  // Initial Listeners
   init = () => {
     // Start Stream
     this.startButton.addEventListener('click', () => this.start(), false);
-
     // Stop Stream
     this.stopButton.addEventListener('click', () => this.stopRecording([this.videoStreamState, this.audioStreamState]), false);
   };
+  observeTime = ({seconds}) => {
+    console.log({seconds})
+  }
 }
 
 export default ScreenRecorder;
