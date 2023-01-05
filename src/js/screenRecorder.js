@@ -21,7 +21,6 @@ class ScreenRecorder {
     this.startButton = document.getElementById(this.startButtonId);
     this.stopButton = document.getElementById(this.stopButtonId);
   }
-
   // Declare Stats
   videoStreamState;
   audioStreamState;
