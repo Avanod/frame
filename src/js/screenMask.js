@@ -18,8 +18,6 @@ class ScreenMask {
         event.preventDefault();
         if (!moved) element = this.createElement();
         if (!element) return;
-        console.log({x, innerWidth});
-        console.log({y, innerHeight});
         // Style
         //// Background color of element
         element.style.backgroundColor = 'black';
@@ -33,8 +31,6 @@ class ScreenMask {
         //// Width and height of element
         element.style.width = `${startPosition.x > x ? (x < 0 ? startPosition.x - 5 : startPosition.x - x) : (x > innerWidth ? innerWidth - startPosition.x - 5 : x - startPosition.x)}px`;
         element.style.height = `${startPosition.y > y ? (y < 0 ? startPosition.y - 5 : startPosition.y - y) : (y > innerHeight ? innerHeight - startPosition.y - 5 :  y - startPosition.y)}px`;
-        ////////////////////////////////////////////
-        console.log(startPosition.x > x ? (x < 0 ? startPosition.x - 5 : startPosition.x - x) : (x > innerWidth ? innerWidth - startPosition.x - 5 : x - startPosition.x))
         moved = true;
       }
     };
@@ -74,4 +70,4 @@ class ScreenMask {
   removeElement = (element) => element.remove();
 }
 
-export default new ScreenMask;
+export default ScreenMask;

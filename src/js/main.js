@@ -7,4 +7,5 @@ import ScreenRecorder from './screenRecorder.js';
 const screenRecorder = new ScreenRecorder()
 screenRecorder.init();
 // Screen Mask
-ScreenMask.init();
+const screenMask = new ScreenMask()
+screenMask.init();
