@@ -1,6 +1,7 @@
 import {runTimer, stopTimer} from './timer.js';
 import {createFloatingElement, destroyFloatingElement} from './floatingElement.js';
 import saveData from './saveData.js';
+
 class ScreenRecorder {
   constructor(options) {
     this.startButtonId = options?.startButtonId ?? 'startButton';
@@ -20,6 +21,7 @@ class ScreenRecorder {
     this.startButton = document.getElementById(this.startButtonId);
     this.stopButton = document.getElementById(this.stopButtonId);
   }
+
   // Declare Stats
   videoStreamState;
   audioStreamState;
@@ -100,9 +102,9 @@ class ScreenRecorder {
     // Stop Stream
     this.stopButton.addEventListener('click', () => this.stopRecording([this.videoStreamState, this.audioStreamState]), false);
   };
-  observeTime = ({seconds}) => {
-    console.log({seconds})
-  }
+  observeTime = ({minutes}) => {
+    if (minutes === 2) this.stopRecording([this.videoStreamState, this.audioStreamState]);
+  };
 }
 
 export default ScreenRecorder;
