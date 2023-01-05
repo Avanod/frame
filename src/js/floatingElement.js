@@ -1,8 +1,8 @@
-const createFloatingElement = async () => {
-  // Create wrapper element
-  const element = document.createElement('div');
-  // Create timer element
-  const timer = document.createElement('span');
+// Create wrapper element
+const element = document.createElement('div');
+// Create timer element
+const timerElement = document.createElement('span');
+export const createFloatingElement = async () => {
   // Finalized wrapper
   const finalizedWrapper = new Promise((resolve) => {
     // Wrapper styles
@@ -23,10 +23,10 @@ const createFloatingElement = async () => {
   });
   // Finalized timer
   const finalizedTimer = new Promise((resolve) => {
-    timer.setAttribute('id', 'rs-timer');
-    timer.innerText = '00:00:000';
-    element.appendChild(timer);
-    resolve(timer);
+    timerElement.setAttribute('id', 'rs-timer');
+    timerElement.innerText = '00:00:000';
+    element.appendChild(timerElement);
+    resolve(timerElement);
   });
   // Append wrapper to body
   const appendToBody = new Promise((resolve) => {
@@ -36,4 +36,7 @@ const createFloatingElement = async () => {
   return Promise.all([finalizedWrapper, finalizedTimer, appendToBody]);
 };
 
-export default createFloatingElement;
+export const destroyFloatingElement = () => {
+  element.remove()
+  timerElement.remove()
+};

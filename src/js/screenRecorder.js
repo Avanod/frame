@@ -1,5 +1,6 @@
 import {runTimer, stopTimer} from './timer.js';
-import createFloatingElement from './createFloatingElement.js';
+import {createFloatingElement, destroyFloatingElement} from './floatingElement.js';
+import saveData from './saveData.js';
 class ScreenRecorder {
   constructor(options) {
     this.startButtonId = options?.startButtonId ?? 'startButton';
@@ -62,7 +63,6 @@ class ScreenRecorder {
   // Start get permission
   start = () => {
     const stopRecording = () => this.stopRecording([this.videoStreamState, this.audioStreamState]);
-    const saveData = (recordedBlob, fileName) => this.saveData(recordedBlob, fileName);
     const mimeType = this.mimeType;
     this.createStream()
         // Create recorded chunks and wait for stop
@@ -80,6 +80,8 @@ class ScreenRecorder {
         .then((recordedChunks) => {
           // Stop timer
           stopTimer();
+          // Destroy floating element
+          destroyFloatingElement();
           // Create Blob
           const recordedBlob = new Blob(recordedChunks, {type: mimeType});
           // Test of File
@@ -94,20 +96,6 @@ class ScreenRecorder {
           }
         });
   };
-  // Save video
-  saveData = (function () {
-    const a = document.createElement('a');
-    document.body.appendChild(a);
-    a.style.display = 'none';
-    return function (recordedBlob, fileName) {
-      const url = URL.createObjectURL(recordedBlob);
-      a.href = url;
-      // Name of downloaded file
-      a.download = `${fileName}.webm`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-    };
-  }());
   // Initial Listeners
   init = () => {
     // Start Stream
