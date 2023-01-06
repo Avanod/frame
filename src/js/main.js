@@ -8,4 +8,4 @@ const screenRecorder = new ScreenRecorder()
 screenRecorder.init();
 // Screen Mask
 const screenMask = new ScreenMask()
-screenMask.init();
+screenMask.init(true);

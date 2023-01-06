@@ -1,5 +1,8 @@
 class ScreenMask {
-  init = () => this.mouseEvents()
+  init = (initial) => {
+    if (!initial) return;
+    this.mouseEvents();
+  }
   mouseEvents = () => {
     let moved, clicked, startPosition, element;
     let mousedownListener = (event) => {
