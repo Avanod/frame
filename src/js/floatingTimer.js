@@ -52,12 +52,12 @@ const finalizedElements = async () => {
   });
   return Promise.all([finalizedTimer, finalizedWrapper, finalizedCloseButton, appendToBody]);
 };
-export const createFloatingElement = async (callback) => {
+export const createTimer = async (callback) => {
   closeButton.onclick = () => callback(true);
   // Return created element
   return new Promise((resolve) => finalizedElements().then(response => resolve(response[0])));
 };
-export const destroyFloatingElement = () => {
+export const destroyTimer = () => {
   element.remove();
   timerElement.remove();
 };

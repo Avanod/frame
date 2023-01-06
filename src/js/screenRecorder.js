@@ -1,5 +1,5 @@
 import {runTimer, stopTimer} from './timer.js';
-import {createFloatingElement, destroyFloatingElement} from './floatingElement.js';
+import {createTimer, destroyTimer} from './floatingTimer.js';
 import saveData from './saveData.js';
 
 class ScreenRecorder {
@@ -71,7 +71,7 @@ class ScreenRecorder {
           // Check if stream is stopped with browser button
           stream.getVideoTracks()[0].onended = () => stopRecording();
           // Create float element
-          createFloatingElement(()=> this.stopRecording()).then((response) => /* Start timer */ runTimer(response, this.observeTime));
+          createTimer(()=> this.stopRecording()).then((response) => /* Start timer */ runTimer(response, this.observeTime));
           return this.startRecording(stream);
         })
         // Create Blob and video file
@@ -79,7 +79,7 @@ class ScreenRecorder {
           // Stop timer
           stopTimer();
           // Destroy floating element
-          destroyFloatingElement();
+          destroyTimer();
           // Create Blob
           const recordedBlob = new Blob(recordedChunks, {type: mimeType});
           // Test of File
