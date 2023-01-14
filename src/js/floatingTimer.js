@@ -52,8 +52,8 @@ const finalizedElements = async () => {
   });
   return Promise.all([finalizedTimer, finalizedWrapper, finalizedCloseButton, appendToBody]);
 };
-export const createTimer = async (callback) => {
-  closeButton.onclick = () => callback(true);
+export const createTimer = async (stopRecord) => {
+  closeButton.onclick = () => stopRecord(true);
   // Return created element
   return new Promise((resolve) => finalizedElements().then(response => resolve(response[0])));
 };

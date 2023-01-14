@@ -1,11 +1,7 @@
-import {runTimer, stopTimer} from './timer.js';
-import {createTimer, destroyTimer} from './floatingTimer.js';
 import saveData from './saveData.js';
 
 class ScreenRecorder {
   constructor(options) {
-    this.startButtonId = options?.startButtonId ?? 'startButton';
-    this.stopButtonId = options?.stopButtonId ?? 'stopButton';
     // Declare constraints
     this.displayMediaConstraints = options?.displayMediaConstraints ?? {audio: true, video: true};
     this.userMediaConstraints = options?.userMediaConstraints ?? {
@@ -17,16 +13,13 @@ class ScreenRecorder {
     };
     // Declare mime type
     this.mimeType = options?.mimeType ?? 'video/webm';
-    // Declare Elements
-    this.startButton = document.getElementById(this.startButtonId);
-    this.stopButton = document.getElementById(this.stopButtonId);
   }
+
   // Declare Stats
   videoStreamState;
   audioStreamState;
   // Start recording function
   startRecording = (stream) => {
-    runTimer();
     // Create a media recorder
     const recorder = new MediaRecorder(stream);
     // The stream data is stored in this array
@@ -42,6 +35,20 @@ class ScreenRecorder {
     });
     // When stream is stopped, return data
     return Promise.all([stopped]).then(() => data);
+  };
+  renderStream = (stream) => {
+    // Check if stream is stopped with browser button
+    stream.getVideoTracks()[0].onended = () => this.stopRecording();
+    const onStop = this.onStop();
+    this.startRecording(stream).then((recordedChunks) => {
+      const mimeType = this.mimeType;
+      // Create Blob and video file
+      const recordedBlob = new Blob(recordedChunks, {type: mimeType});
+      // Test of File
+      onStop.canceled = true;
+      saveData(recordedBlob, 'my-file');
+      console.log(`Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
+    });
   };
   // Stop recording function
   stopRecording = () => {
@@ -62,48 +69,20 @@ class ScreenRecorder {
     return this.videoStreamState;
   };
   // Start get permission
-  start = () => {
-    const stopRecording = () => this.stopRecording();
-    const mimeType = this.mimeType;
-    this.createStream()
-        // Create recorded chunks and wait for stop
-        .then((stream) => {
-          // Check if stream is stopped with browser button
-          stream.getVideoTracks()[0].onended = () => stopRecording();
-          // Create float element
-          createTimer(()=> this.stopRecording()).then((response) => /* Start timer */ runTimer(response, this.observeTime));
-          return this.startRecording(stream);
-        })
-        // Create Blob and video file
-        .then((recordedChunks) => {
-          // Stop timer
-          stopTimer();
-          // Destroy floating element
-          destroyTimer();
-          // Create Blob
-          const recordedBlob = new Blob(recordedChunks, {type: mimeType});
-          // Test of File
-          saveData(recordedBlob, 'my-file');
-          console.log(`Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
-        })
-        .catch((error) => {
-          if (error.name === 'NotFoundError') {
-            console.log('Camera or microphone not found. Can\'t record.');
-          } else {
-            console.log(error);
-          }
-        });
+  start = async () => {
+    // Create recorded chunks and wait for stop
+    await this.createStream().then((stream) => {
+      this.renderStream(stream);
+      return true;
+    }).catch((error) => {
+      if (error.name === 'NotFoundError') {
+        console.log('Camera or microphone not found. Can\'t record.');
+      } else {
+        console.log(error);
+      }
+    });
   };
-  // Initial Listeners
-  init = () => {
-    // Start Stream
-    this.startButton.addEventListener('click', () => this.start(), false);
-    // Stop Stream
-    this.stopButton.addEventListener('click', () => this.stopRecording(), false);
-  };
-  observeTime = ({minutes}) => {
-    if (minutes === 2) this.stopRecording();
-  };
+  onStop = async () => new Promise(resolve => resolve(true));
 }
 
 export default ScreenRecorder;

@@ -4,6 +4,7 @@ class ScreenMask {
   startPosition;
   element;
   createElement = () => {
+    /* todo move css to js */
     // Create elements
     const element = document.createElement('div');
     const close = document.createElement('div');
@@ -20,6 +21,10 @@ class ScreenMask {
     return element;
   };
   removeElement = (element) => element.remove();
+  removeAllElements = () => {
+    const elements = document.querySelectorAll(`[id^='mask-element-']`);
+    elements.forEach(element => element.remove());
+  };
   mousedownListener = (event) => {
     const x = event.pageX;
     const y = event.pageY;
@@ -73,7 +78,7 @@ class ScreenMask {
     document.removeEventListener('mousedown', this.mousedownListener);
     document.removeEventListener('mousemove', this.mousemoveListener);
     document.removeEventListener('mouseup', this.mouseupListener);
-  }
+  };
   init = (initial) => {
     if (!initial) {
       this.removeMouseEvents();
@@ -82,4 +87,5 @@ class ScreenMask {
     this.addMouseEvents();
   };
 }
+
 export default ScreenMask;

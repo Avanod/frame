@@ -30,8 +30,8 @@ export const runTimer = (ref, callback) => {
     let h = hours < 10 ? '0' + hours : hours;
     let m = minutes < 10 ? '0' + minutes : minutes;
     let s = seconds < 10 ? '0' + seconds : seconds;
-    let ms = milliseconds < 10 ? '00' + milliseconds : milliseconds < 100 ? '0' + milliseconds : milliseconds;
-    timerRef.innerText = `${h < 1 ? '' : h + ':'}${m}:${s}:${ms}`;
+    // let ms = milliseconds < 10 ? '00' + milliseconds : milliseconds < 100 ? '0' + milliseconds : milliseconds;
+    timerRef.innerText = `${h < 1 ? '' : h + ':'}${m}:${s}`;
   };
   // Update time in callback
   const updateCallback = () => callback({seconds, minutes, hours});
