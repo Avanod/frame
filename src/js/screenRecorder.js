@@ -1,3 +1,4 @@
+import Observable from './Observable.js';
 import saveData from './saveData.js';
 
 class ScreenRecorder {
@@ -39,13 +40,13 @@ class ScreenRecorder {
   renderStream = (stream) => {
     // Check if stream is stopped with browser button
     stream.getVideoTracks()[0].onended = () => this.stopRecording();
-    const onStop = this.onStop();
     this.startRecording(stream).then((recordedChunks) => {
       const mimeType = this.mimeType;
       // Create Blob and video file
       const recordedBlob = new Blob(recordedChunks, {type: mimeType});
+      // Fire observer
+      Observable.fire('stopped')
       // Test of File
-      onStop.canceled = true;
       saveData(recordedBlob, 'my-file');
       console.log(`Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
     });
@@ -82,7 +83,6 @@ class ScreenRecorder {
       }
     });
   };
-  onStop = async () => new Promise(resolve => resolve(true));
 }
 
 export default ScreenRecorder;
