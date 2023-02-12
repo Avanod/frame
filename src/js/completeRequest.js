@@ -1,27 +1,29 @@
 import init, {addTitle, hideModal, showModal} from './modal.js';
 
-// fullName
-// subject
-// description
-// priority
-// file
+const storeValues = {};
 
-const completeRequest = async ({fullName, subject}) => {
-  console.log(fullName, subject)
+const onChangeValue = (event) => {
+  const {name, value} = event.target;
+  storeValues[name] = value;
+  console.log({name, value});
+};
+
+const completeRequest = ({fullName, subject}, onSubmit) => {
+  storeValues['fullName'] = fullName;
+  storeValues['subject'] = subject;
   init().then((modalContent) => {
-    createModalContent({fullName, subject}).then(([content, title, footer]) => {
+    createModalContent({fullName, subject}, onSubmit).then(([content, title, footer]) => {
       modalContent.appendChild(content).appendChild(footer);
       addTitle(title);
       showModal();
     });
   });
-
 };
 // Modal Sections
-const createModalContent = async ({fullName, subject}) => {
+const createModalContent = async ({fullName, subject}, onSubmit) => {
   const content = new Promise((resolve) => resolve(createContent({fullName, subject})));
   const title = new Promise((resolve) => resolve(createTitle()));
-  const footer = new Promise((resolve) => resolve(createFooter()));
+  const footer = new Promise((resolve) => resolve(createFooter(onSubmit)));
   return Promise.all([content, title, footer]);
 };
 const createContent = ({fullName, subject}) => {
@@ -38,34 +40,34 @@ const createTitle = () => {
   title.innerText = 'ارسال گزارش خطا یا پیشنهاد بهبود سیستم';
   return title;
 };
-const createFooter = () => {
+const createFooter = (onSubmit) => {
   const footer = document.createElement('div');
   footer.style.display = 'flex';
   footer.style.justifyContent = 'space-between';
-  // Accept Button
-  const acceptButton = document.createElement('button');
-  acceptButton.innerText = 'انصراف';
-  acceptButton.style.textAlign = 'center';
-  acceptButton.style.whiteSpace = 'nowrap';
-  acceptButton.style.padding = '0.375rem 0.75rem';
-  acceptButton.style.color = '#FFF';
-  acceptButton.style.backgroundColor = '#DC3545';
-  acceptButton.style.border = '1px solid #dc3545';
-  acceptButton.onclick = () => {
-    hideModal();
-  };
+  // Button Element
+  const button = document.createElement('button');
+  button.style.textAlign = 'center';
+  button.style.whiteSpace = 'nowrap';
+  button.style.padding = '0.375rem 0.75rem';
+  button.style.color = '#FFF';
   // Reject Button
-  const rejectButton = document.createElement('button');
-  rejectButton.innerText = 'ارسال';
-  rejectButton.style.textAlign = 'center';
-  rejectButton.style.whiteSpace = 'nowrap';
-  rejectButton.style.padding = '0.375rem 0.75rem';
-  rejectButton.style.color = '#FFF';
-  rejectButton.style.backgroundColor = '#007BFF';
-  rejectButton.style.border = '1px solid #007bff';
+  const rejectButton = button.cloneNode(true);
+  rejectButton.innerText = 'انصراف';
+  rejectButton.style.backgroundColor = '#DC3545';
+  rejectButton.style.border = '1px solid #dc3545';
+  rejectButton.onclick = () => {
+    hideModal();
+    onSubmit(undefined);
+  };
+  // Accept Button
+  const acceptButton = button.cloneNode(true);
+  acceptButton.innerText = 'ارسال';
+  acceptButton.style.backgroundColor = '#007BFF';
+  acceptButton.style.border = '1px solid #007bff';
+  acceptButton.onclick = () => onSubmit(storeValues);
   // Append buttons to footer
-  footer.appendChild(acceptButton);
   footer.appendChild(rejectButton);
+  footer.appendChild(acceptButton);
   return footer;
 };
 // Form and Inputs
@@ -80,6 +82,7 @@ const createInput = (row, col, inputLabel, label, name, initialValue) => {
   input.setAttribute('name', name);
   input.setAttribute('type', 'text');
   input.setAttribute('placeholder', label);
+  input.onchange = onChangeValue;
   if (initialValue) input.value = initialValue;
   // Label
   inputLabel.innerText = label;
@@ -99,6 +102,7 @@ const createSelect = (row, col, selectLabel, options, label, name) => {
   //// Select property
   select.setAttribute('id', name);
   select.setAttribute('name', name);
+  select.onchange = onChangeValue;
   // Options
   const option = document.createElement('option');
   options.forEach(item => {
@@ -126,6 +130,7 @@ const createTextArea = (row, col, textAreaLabel, label, name) => {
   textArea.setAttribute('name', name);
   textArea.setAttribute('rows', '4');
   textArea.setAttribute('placeholder', label);
+  textArea.onchange = onChangeValue;
   // Label
   textAreaLabel.innerText = label;
   textAreaLabel.setAttribute('for', name);

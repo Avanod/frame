@@ -47,7 +47,7 @@ class ScreenRecorder {
       // Fire observer
       Observable.fire('stopped');
       // Test of File
-      saveData(recordedBlob, 'my-file');
+      saveData(recordedBlob);
       console.log(`Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
     });
   };
