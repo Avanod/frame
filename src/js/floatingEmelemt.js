@@ -236,4 +236,12 @@ export const createElement = async (closeElement, startRecord, stopRecord, start
 export const destroyElement = () => {
   wrapper.remove();
   timerElement.remove();
+  closeButton.remove();
+  maskWrapper.remove();
+  maskStartButton.remove();
+  maskStopButton.remove();
+  maskStopLine.remove();
+  recordWrapper.remove();
+  startRecordButton.remove();
+  stopRecordButton.remove();
 };
