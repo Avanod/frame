@@ -45,7 +45,7 @@ class ScreenRecorder {
       // Create Blob and video file
       const recordedBlob = new Blob(recordedChunks, {type: mimeType});
       // Fire observer
-      Observable.fire('stopped')
+      Observable.fire('stopped');
       // Test of File
       saveData(recordedBlob, 'my-file');
       console.log(`Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
