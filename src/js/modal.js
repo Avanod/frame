@@ -27,7 +27,7 @@ const createModal = () => {
   return modal;
 };
 const createHeader = () => {
-  header.style.padding = '17px 15px';
+  header.style.padding = '26px 30px';
   header.style.display = 'flex';
   header.style.justifyContent = 'space-between'
   modal.appendChild(header);
@@ -48,7 +48,7 @@ const createCloseButton = () => {
 };
 const createContent = () => {
   content.setAttribute('id', 'rs-modal-content');
-  content.style.padding = '17px 15px';
+  content.style.padding = '26px 30px';
   modal.appendChild(content);
   return content;
 };

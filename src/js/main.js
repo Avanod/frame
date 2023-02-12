@@ -2,6 +2,7 @@
 import '../scss/main.scss';
 import {createElement, destroyElement} from './floatingEmelemt.js';
 import Observable from './Observable.js';
+import {initialInfo} from './saveData.js';
 import {runTimer, stopTimer} from './timer.js';
 import ScreenMask from './screenMask.js';
 import ScreenRecorder from './screenRecorder.js';
@@ -11,9 +12,7 @@ const screenMask = new ScreenMask();
 // Declare time wrapper
 let timerWrapper;
 // Declare start button
-
 const startButton = document.getElementById('startButton');
-
 const startRecord = () => {
   // Subscribe observer
   Observable.subscribe(clearElements);
@@ -35,4 +34,12 @@ const stopMask = () => {
   screenMask.init(false);
 };
 const observeTime = ({minutes}) => (minutes === 1) && stopRecord();
-startButton.onclick = () => createElement(closeElement, startRecord, stopRecord, startMask, stopMask).then(element => timerWrapper = element);
+
+startButton.onclick = () => createElement(closeElement, startRecord, stopRecord, startMask, stopMask).then(element => {
+  // Initial Submit Data
+  initialInfo.info = {
+    fullName: 'nima',
+    subject: 'text',
+  };
+  timerWrapper = element;
+});
