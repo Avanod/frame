@@ -1,6 +1,9 @@
+import {maskIcon, recordIcon, recordingIcon, stopRecordIcon} from './svg.js';
+
 // wrapper element
 const wrapper = document.createElement('div');
 // Timer element
+const timerWrapper = document.createElement('div');
 const timerElement = document.createElement('span');
 // Close Element
 const closeButton = document.createElement('span');
@@ -8,9 +11,9 @@ const closeButton = document.createElement('span');
 const maskWrapper = document.createElement('div');
 const maskStartButton = document.createElement('span');
 const maskStopButton = document.createElement('span');
-const maskStopLine = document.createElement('span');
 // Record Elements
 const recordWrapper = document.createElement('div');
+const recordButton = document.createElement('span');
 const startRecordButton = document.createElement('span');
 const stopRecordButton = document.createElement('span');
 // Blink timeout variable
@@ -27,9 +30,9 @@ const mouseOutWrapper = () => {
 };
 const blinkStopButton = () => {
   blinkIntervalId = setInterval(() => {
-    const opacity = getComputedStyle(stopRecordButton).opacity;
-    if (opacity === '1') stopRecordButton.style.opacity = '0';
-    else stopRecordButton.style.opacity = '1';
+    const opacity = getComputedStyle(recordButton).opacity;
+    if (opacity === '1') recordButton.style.opacity = '0';
+    else recordButton.style.opacity = '1';
   }, 500);
 };
 const finalizedElements = async () => {
@@ -39,15 +42,16 @@ const finalizedElements = async () => {
     wrapper.style.position = 'fixed';
     wrapper.style.left = '25px';
     wrapper.style.bottom = '25px';
-    wrapper.style.height = '50px';
-    wrapper.style.backgroundColor = 'rgba(0, 0, 0, .75)';
-    wrapper.style.border = '1px solid rgba(255, 255, 255, 1)';
-    wrapper.style.padding = '10px';
+    wrapper.style.height = '55px';
+    wrapper.style.backgroundColor = 'rgba(256, 256, 256, 1)';
+    wrapper.style.border = '1px solid #8685E0';
+    wrapper.style.borderRadius = '6px';
+    wrapper.style.padding = '10px 15px';
     wrapper.style.display = 'flex';
     wrapper.style.alignItems = 'center';
-    wrapper.style.color = 'white';
+    wrapper.style.color = 'black';
     wrapper.style.fontFamily = '"Roboto mono",monospace';
-    wrapper.style.fontSize = '16px';
+    wrapper.style.fontSize = '20px';
     wrapper.style.direction = 'ltr';
     // Hover wrapper
     wrapper.addEventListener('mouseover', mouseEnterWrapper);
@@ -57,15 +61,9 @@ const finalizedElements = async () => {
   const initMaskStartButton = new Promise((resolve) => {
     // Mask start button ID
     maskStartButton.setAttribute('id', 'rs-mask-start');
-    // Mask button styles
-    maskStartButton.style.display = 'inline-block';
-    maskStartButton.style.width = '30px';
-    maskStartButton.style.height = '30px';
-    maskStartButton.style.backgroundColor = '#000';
-    maskStartButton.style.border = '1px solid #fff';
-    maskStartButton.style.marginRight = '10px';
-    maskStartButton.style.cursor = 'pointer';
-    // Append to mask wrapper
+    maskStartButton.innerHTML = maskIcon;
+    maskStartButton.style.borderLeft = '1px solid #C9C9C9';
+    maskStartButton.style.paddingLeft = '15px';
     maskWrapper.appendChild(maskStartButton);
     resolve(true);
   });
@@ -83,16 +81,64 @@ const finalizedElements = async () => {
     maskStopButton.style.cursor = 'pointer';
     resolve(true);
   });
-  const initStopRecordLine = new Promise((resolve) => {
-    maskStopLine.setAttribute('id', 'rs-mask-stop-line');
-    maskStopLine.style.position = 'absolute';
-    maskStopLine.style.height = '1px';
-    maskStopLine.style.width = '180%';
-    maskStopLine.style.backgroundColor = '#FF0205';
-    maskStopLine.style.transform = 'translate(50%, -50%) rotate(315deg)';
-    maskStopLine.style.right = '50%';
-    maskStopLine.style.top = '50%';
-    maskStopButton.appendChild(maskStopLine);
+  // Finalize timer
+  const initTimerWrapper = new Promise((resolve)=>{
+    // Timer ID
+    timerWrapper.setAttribute('id', 'rs-timer-wrapper');
+    // Timer styles
+    timerWrapper.style.margin = '0 20px 0 0';
+    timerWrapper.style.display = 'flex';
+    timerWrapper.style.alignItems = 'center';
+    timerWrapper.style.lineHeight = '1.2';
+    timerWrapper.style.position = 'relative';
+    // Append to wrapper
+    wrapper.appendChild(timerWrapper);
+    resolve(true);
+  })
+  const initTimer = new Promise((resolve) => {
+    // Timer ID
+    timerElement.setAttribute('id', 'rs-timer');
+    // Timer styles
+    timerElement.style.fontSize = '20px';
+    timerElement.innerText = '00:00';
+    // Append to wrapper
+    timerWrapper.appendChild(timerElement);
+    resolve(timerElement);
+  });
+  // Record button
+  const initRecordButton = new Promise((resolve)=>{
+    recordButton.setAttribute('id','rs-recording');
+    recordButton.style.opacity = '0';
+    recordButton.style.transition = 'all .3s ease';
+    recordButton.style.position = 'absolute';
+    recordButton.style.right = '-20px';
+    recordButton.innerHTML = recordingIcon;
+    timerWrapper.appendChild(recordButton);
+    resolve(true);
+  })
+  // Initial start button
+  const initStartRecordButton = new Promise((resolve) => {
+    startRecordButton.setAttribute('id', 'rs-start-record');
+    startRecordButton.innerHTML = recordIcon;
+    startRecordButton.style.cursor = 'pointer';
+    recordWrapper.appendChild(startRecordButton);
+    resolve(true);
+  });
+  // Initial stop button
+  const initStopRecordButton = new Promise((resolve) => {
+    stopRecordButton.setAttribute('id', 'rs-stop-record');
+    stopRecordButton.innerHTML = stopRecordIcon;
+    stopRecordButton.style.cursor = 'pointer';
+    resolve(true);
+  });
+  // Initial record wrapper
+  const initRecordWrapper = new Promise((resolve) => {
+    recordWrapper.setAttribute('id', 'rs-record-wrapper');
+    recordWrapper.style.margin = '0 15px';
+    recordWrapper.style.display = 'flex';
+    recordWrapper.style.alignItems = 'center';
+    recordWrapper.style.justifyContent = 'center';
+    wrapper.appendChild(recordWrapper);
     resolve(true);
   });
   // Initial mask wrapper
@@ -105,22 +151,6 @@ const finalizedElements = async () => {
     // Append to wrapper
     wrapper.appendChild(maskWrapper);
     resolve(true);
-  });
-  // Finalize timer
-  const initTimer = new Promise((resolve) => {
-    // Timer ID
-    timerElement.setAttribute('id', 'rs-timer');
-    // Timer styles
-    timerElement.style.borderLeft = '1px solid #fff';
-    timerElement.style.height = '46px';
-    timerElement.style.padding = '0 10px 0 20px';
-    timerElement.style.fontSize = '16px';
-    timerElement.style.display = 'flex';
-    timerElement.style.alignItems = 'center';
-    timerElement.innerText = '00:00';
-    // Append to wrapper
-    wrapper.appendChild(timerElement);
-    resolve(timerElement);
   });
   // Initial close button
   const initCloseButton = new Promise((resolve) => {
@@ -151,56 +181,21 @@ const finalizedElements = async () => {
     wrapper.appendChild(closeButton);
     resolve(true);
   });
-  // Initial start button
-  const initStartRecordButton = new Promise((resolve) => {
-    startRecordButton.setAttribute('id', 'rs-start-record');
-    startRecordButton.style.display = 'inline-block';
-    startRecordButton.style.backgroundColor = '#FF0205';
-    startRecordButton.style.width = '18px';
-    startRecordButton.style.height = '18px';
-    startRecordButton.style.borderRadius = '50%';
-    startRecordButton.style.cursor = 'pointer';
-    recordWrapper.appendChild(startRecordButton);
-    resolve(true);
-  });
-  // Initial stop button
-  const initStopRecordButton = new Promise((resolve) => {
-    stopRecordButton.setAttribute('id', 'rs-stop-record');
-    stopRecordButton.style.display = 'inline-block';
-    stopRecordButton.style.backgroundColor = '#FF0205';
-    stopRecordButton.style.width = '18px';
-    stopRecordButton.style.height = '18px';
-    stopRecordButton.style.borderRadius = '50%';
-    stopRecordButton.style.cursor = 'pointer';
-    stopRecordButton.style.transition = 'all .3s ease';
-    resolve(true);
-  });
-  // Initial record wrapper
-  const initRecordWrapper = new Promise((resolve) => {
-    recordWrapper.setAttribute('id', 'rs-record-wrapper');
-    recordWrapper.style.width = '18px';
-    recordWrapper.style.height = '30px';
-    recordWrapper.style.marginRight = '10px';
-    recordWrapper.style.display = 'flex';
-    recordWrapper.style.alignItems = 'center';
-    recordWrapper.style.justifyContent = 'center';
-    wrapper.appendChild(recordWrapper);
-    resolve(true);
-  });
   // Append wrapper to body
   const appendToBody = new Promise((resolve) => {
     document.body.appendChild(wrapper);
     resolve(true);
   });
   return Promise.all([
+    initTimerWrapper,
     initTimer,
+    initWrapper,
+    initRecordButton,
+    initStartRecordButton,
+    initStopRecordButton,
     initMaskWrapper,
     initMaskStartButton,
     initMaskStopButton,
-    initStopRecordLine,
-    initWrapper,
-    initStartRecordButton,
-    initStopRecordButton,
     initRecordWrapper,
     initCloseButton,
     appendToBody,
@@ -235,13 +230,14 @@ export const createElement = async (closeElement, startRecord, stopRecord, start
 };
 export const destroyElement = () => {
   wrapper.remove();
+  timerWrapper.remove();
   timerElement.remove();
   closeButton.remove();
   maskWrapper.remove();
   maskStartButton.remove();
   maskStopButton.remove();
-  maskStopLine.remove();
   recordWrapper.remove();
+  recordButton.remove();
   startRecordButton.remove();
   stopRecordButton.remove();
 };
