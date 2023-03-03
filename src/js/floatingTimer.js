@@ -27,7 +27,7 @@ const finalizedElements = async () => {
   const finalizedTimer = new Promise((resolve) => {
     timerElement.setAttribute('id', 'rs-timer');
     timerElement.style.marginRight = '4px';
-    timerElement.innerText = '00:00:000';
+    timerElement.innerText = '00:00';
     element.appendChild(timerElement);
     resolve(timerElement);
   });
