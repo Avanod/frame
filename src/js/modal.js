@@ -4,6 +4,14 @@ const header = document.createElement('div');
 const closeButton = document.createElement('span');
 const content = document.createElement('div');
 const body = document.querySelector('body');
+const addFontFace = () => {
+  const link = document.createElement('link');
+  link.setAttribute('rel', 'stylesheet');
+  link.setAttribute('type', 'text/css');
+  link.setAttribute('href', 'https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
+  document.head.appendChild(link);
+  return true;
+}
 const createFade = () => {
   fade.style.position = 'fixed';
   fade.style.inset = '0 0 0 0';
@@ -53,12 +61,13 @@ const createContent = () => {
   return content;
 };
 const initialModal = async () => {
+  const initialFontFace = new Promise((resolve) => resolve(addFontFace()));
   const initialFade = new Promise((resolve) => resolve(createFade()));
   const initialModal = new Promise((resolve) => resolve(createModal()));
   const initialHeader = new Promise((resolve) => resolve(createHeader()));
   const initialCloseButton = new Promise((resolve) => resolve(createCloseButton()));
   const initialContent = new Promise((resolve) => resolve(createContent()));
-  return Promise.all([initialContent, initialHeader, initialFade, initialModal, initialCloseButton]);
+  return Promise.all([initialFontFace, initialContent, initialHeader, initialFade, initialModal, initialCloseButton]);
 };
 const init = async () => new Promise(resolve => initialModal().then(response => resolve(response[0])));
 export const showModal = () => {
