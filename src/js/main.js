@@ -6,40 +6,100 @@ import {initialInfo} from './saveData.js';
 import {runTimer, stopTimer} from './timer.js';
 import ScreenMask from './screenMask.js';
 import ScreenRecorder from './screenRecorder.js';
-// Screen Recorder
-const screenRecorder = new ScreenRecorder();
-const screenMask = new ScreenMask();
-// Declare time wrapper
-let timerWrapper;
-// Declare start button
-const startButton = document.getElementById('startButton');
-const startRecord = () => {
-  // Subscribe observer
-  Observable.subscribe(clearElements);
-  screenRecorder.start().then(() => runTimer(timerWrapper, observeTime));
-};
-const stopRecord = () => screenRecorder.stopRecording();
-const closeElement = () => screenRecorder.stopRecording();
-const clearElements = () => {
-  stopTimer();
-  destroyElement();
-  screenMask.removeAllElements();
-  // Unsubscribe observer
-  Observable.unsubscribe(clearElements);
-};
-const startMask = () => {
-  screenMask.init(true);
-};
-const stopMask = () => {
-  screenMask.init(false);
-};
-const observeTime = ({minutes}) => (minutes === 1) && stopRecord();
 
-startButton.onclick = (options) => createElement(closeElement, startRecord, stopRecord, startMask, stopMask).then(element => {
-  // Initial Submit Data
-  initialInfo.info = {
-    fullName: options.fullname,
-    subject: 'text',
-  };
-  timerWrapper = element;
-});
+class avmJSBuilder {
+  constructor() {
+    this.options = null;
+    this.startButton = null;
+    this.screenRecorder = new ScreenRecorder();
+    this.screenMask = new ScreenMask();
+    this.timerWrapper = null;
+  }
+
+  initialize({options, startButtonId}) {
+    if (!options) {
+      console.error('Options not set.');
+      return;
+    }
+    if (!startButtonId) {
+      console.error('Start button not set.');
+      return;
+    }
+    console.info('AVM JS is initialized!');
+
+    this.options = options;
+    this.startButton = document.getElementById(startButtonId);
+
+    initialInfo.info = {
+      fullName: this.options.fullName,
+      email: this.options.email,
+      avatar: this.options.avatar,
+      requestUrl: this.options.requestUrl,
+    };
+
+    if (this.startButton) {
+      this.startButton.addEventListener('click', this.createElement.bind(this));
+    } else {
+      console.error(`Element with ID '${startButtonId}' not found.`);
+    }
+  }
+
+  startRecording() {
+    Observable.subscribe(this.clearElements.bind(this));
+    this.screenRecorder.start().then(() => {
+      console.info('Record is started');
+      runTimer(this.timerWrapper, this.observeTime.bind(this));}
+    );
+  }
+
+  stopRecording() {
+    console.info('Record is stopped!');
+    this.screenRecorder.stopRecording();
+  }
+
+  closeElement() {
+    this.screenRecorder.stopRecording();
+  }
+
+  clearElements() {
+    stopTimer();
+    destroyElement();
+    this.screenMask.removeAllElements();
+    Observable.unsubscribe(this.clearElements.bind(this));
+  }
+
+  startMask() {
+    this.screenMask.init(true);
+  }
+
+  stopMask() {
+    this.screenMask.init(false);
+  }
+
+  observeTime({minutes}) {
+    if (minutes === 1) {
+      this.stopRecording();
+    }
+  }
+
+  createElement() {
+    createElement(this.closeElement.bind(this), this.startRecording.bind(this), this.stopRecording.bind(this), this.startMask.bind(this), this.stopMask.bind(this)).then(element => {
+      this.timerWrapper = element;
+    });
+  }
+}
+
+const avmJS = new avmJSBuilder();
+export default avmJS;
+
+// Usage example:
+const options = {
+  fullName: 'John Doe',
+  email: 'n.kaviyani@asax.ir',
+  avatar: null,
+  requestUrl: '',
+};
+
+const startButtonId = 'startButton';
+
+avmJS.initialize({options, startButtonId});
