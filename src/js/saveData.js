@@ -58,7 +58,8 @@ const request = async (recordedBlob, values) => {
   const formData = new FormData();
 
   formData.append('file', file, `${fileName}.webm`);
-  formData.append('fullName', values['fullName']);
+  formData.append('fullName', initialInfo.info.fullName);
+  formData.append('fullName', initialInfo.info.email);
   formData.append('subject', values['subject']);
   formData.append('description', values['description']);
   formData.append('priority', values['priority']);
@@ -70,7 +71,7 @@ const request = async (recordedBlob, values) => {
   console.log({recordedBlob});
   console.log({requestBody});
 
-  const response = await fetch('https://reqbin.com/echo/post/json', {
+  const response = await fetch(initialInfo.info.requestUrl, {
     method: 'POST',
     // body: formData,
     body: {},
