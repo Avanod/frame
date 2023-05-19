@@ -93,13 +93,13 @@ const avmJS = new avmJSBuilder();
 export default avmJS;
 
 // Usage example:
-// const options = {
-//   fullName: 'John Doe',
-//   email: 'n.kaviyani@asax.ir',
-//   avatar: null,
-//   requestUrl: '',
-// };
-//
-// const startButtonId = 'startButton';
-//
-// avmJS.initialize({options, startButtonId});
+const options = {
+  fullName: 'John Doe',
+  email: 'n.kaviyani@asax.ir',
+  avatar: null,
+  requestUrl: '',
+};
+
+const startButtonId = 'startButton';
+
+avmJS.initialize({options, startButtonId});
