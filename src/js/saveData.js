@@ -64,7 +64,6 @@ const request = async (recordedBlob, values) => {
 };
 
 const saveData = (function () {
-  completeRequest(initialInfo.info, (values) => values && request(undefined, undefined, values));
   // const a = document.createElement('a');
   // document.body.appendChild(a);
   // a.style.display = 'none';
