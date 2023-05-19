@@ -262,7 +262,7 @@ export const createElement = async (closeElement, startRecord, stopRecord, start
     clearInterval(blinkIntervalId);
   };
   // Return created element
-  return new Promise((resolve) => finalizedElements().then(response => resolve(response[0])));
+  return new Promise((resolve) => finalizedElements().then(response => resolve(response[2])));
 };
 export const destroyElement = () => {
   clearInterval(blinkIntervalId);
