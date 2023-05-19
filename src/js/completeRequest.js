@@ -1,5 +1,5 @@
-import initialModal , {addTitle, showModal} from './modal.js';
-import {avatarIcon, submitIcon} from './svg.js';
+import initialModal, {addTitle, showModal} from './modal.js';
+import {attachmentIcon, avatarIcon, submitIcon} from './svg.js';
 
 const storeValues = {};
 
@@ -8,9 +8,12 @@ const onChangeValue = (event) => {
   storeValues[name] = value;
   console.log({name, value});
 };
-const completeRequest = ({fullName, email, avatar}, onSubmit) => {
+const completeRequest = ({fullName, email, avatar}, {fileSize, fileName}, onSubmit) => {
   initialModal().then((modalContent) => {
-    createModalContent({fullName, email, avatar}, onSubmit).then(([content, title, footer]) => {
+    createModalContent({fullName, email, avatar}, {
+      fileSize,
+      fileName,
+    }, onSubmit).then(([content, title, footer]) => {
       modalContent.appendChild(content).appendChild(footer);
       addTitle(title);
       showModal();
@@ -18,10 +21,10 @@ const completeRequest = ({fullName, email, avatar}, onSubmit) => {
   });
 };
 // Modal Sections
-const createModalContent = async ({fullName, email, avatar}, onSubmit) => {
+const createModalContent = async ({fullName, email, avatar}, {fileSize, fileName}, onSubmit) => {
   const content = new Promise((resolve) => resolve(createContent({fullName, email, avatar})));
   const title = new Promise((resolve) => resolve(createTitle()));
-  const footer = new Promise((resolve) => resolve(createFooter(onSubmit)));
+  const footer = new Promise((resolve) => resolve(createFooter({fileSize, fileName}, onSubmit)));
   return Promise.all([content, title, footer]);
 };
 const createContent = ({fullName, email, avatar}) => {
@@ -35,10 +38,35 @@ const createTitle = () => {
   title.innerText = 'ارسال بازخورد';
   return title;
 };
-const createFooter = (onSubmit) => {
+const createFooter = ({fileSize, fileName},onSubmit) => {
   const footer = document.createElement('div');
   footer.style.display = 'flex';
-  footer.style.justifyContent = 'flex-end';
+  footer.style.justifyContent = 'space-between';
+  footer.style.alignItems = 'center';
+  // Attachment
+  const attachmentWrapper = document.createElement('div');
+  attachmentWrapper.style.display = 'flex';
+  attachmentWrapper.style.alignItems = 'center';
+  // Attachment Icon
+  const icon = document.createElement('span');
+  icon.innerHTML = attachmentIcon;
+  attachmentWrapper.appendChild(icon);
+  // Attachment Name
+  const attachmentName = document.createElement('span');
+  attachmentName.style.marginRight = '.5rem';
+  attachmentName.style.direction = 'ltr';
+  attachmentName.style.fontSize = '.75rem';
+  attachmentName.innerText = `${fileName}.mp4`;
+  attachmentWrapper.appendChild(attachmentName)
+  // Attachment Time
+  const attachmentSize = document.createElement('span');
+  attachmentSize.style.marginRight = '.5rem';
+  attachmentSize.style.direction = 'ltr';
+  attachmentSize.style.fontSize = '.75rem';
+  attachmentSize.style.color = '#646464'
+  attachmentSize.innerText = fileSize;
+  attachmentWrapper.appendChild(attachmentSize)
+  footer.appendChild(attachmentWrapper);
   // Button Element
   const button = document.createElement('button');
   button.style.textAlign = 'center';
@@ -301,7 +329,7 @@ const createRadioWrapper = (row, col) => {
   //// Bug: 1
   const kindOptions = [
     {label: 'باگ', value: '1', color: '#EF0303'},
-    {label: 'گزارش', value: '2', color: '#0fe800'},
+    {label: 'گزارش', value: '2', color: '#0FE800'},
   ];
   // createSelect(row, col.cloneNode(true), inputLabel.cloneNode(true), options, 'اولویت', 'priority');
   createRadio(wrapper, innerCol.cloneNode(true), kindOptions, 0, 'نوع بازخورد', 'kind');
