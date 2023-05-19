@@ -11,7 +11,7 @@ const addFontFace = () => {
   link.setAttribute('href', 'https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
   document.head.appendChild(link);
   return true;
-}
+};
 const createFade = () => {
   fade.style.position = 'fixed';
   fade.style.inset = '0 0 0 0';
@@ -39,7 +39,7 @@ const createModal = () => {
 const createHeader = () => {
   header.style.padding = '26px 30px';
   header.style.display = 'flex';
-  header.style.justifyContent = 'space-between'
+  header.style.justifyContent = 'space-between';
   modal.appendChild(header);
   return header;
 };
@@ -77,12 +77,13 @@ export const showModal = () => {
   fade.style.display = 'block';
 };
 export const hideModal = () => {
-  console.log('here')
   body.removeAttribute('overflow');
   fade.remove();
   modal.remove();
+  header.innerHTML = '';
   header.remove();
   closeButton.remove();
+  content.innerHTML = '';
   content.remove();
 };
 export const addTitle = (title) => header.insertBefore(title, closeButton);
