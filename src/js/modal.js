@@ -22,7 +22,9 @@ const createFade = () => {
   return fade;
 };
 const createModal = () => {
+  modal.style.fontFamily = 'Vazirmatn, sans-serif';
   modal.style.position = 'absolute';
+  modal.style.borderRadius = '24px';
   modal.style.width = '600px';
   modal.style.height = 'auto';
   modal.style.inset = '50% 0 auto 0';
@@ -67,7 +69,7 @@ const initialModal = async () => {
   const initialHeader = new Promise((resolve) => resolve(createHeader()));
   const initialCloseButton = new Promise((resolve) => resolve(createCloseButton()));
   const initialContent = new Promise((resolve) => resolve(createContent()));
-  return Promise.all([initialFontFace, initialContent, initialHeader, initialFade, initialModal, initialCloseButton]);
+  return Promise.all([initialContent, initialFontFace, initialHeader, initialFade, initialModal, initialCloseButton]);
 };
 const init = async () => new Promise(resolve => initialModal().then(response => resolve(response[0])));
 export const showModal = () => {

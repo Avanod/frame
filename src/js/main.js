@@ -35,10 +35,10 @@ const stopMask = () => {
 };
 const observeTime = ({minutes}) => (minutes === 1) && stopRecord();
 
-startButton.onclick = () => createElement(closeElement, startRecord, stopRecord, startMask, stopMask).then(element => {
+startButton.onclick = (options) => createElement(closeElement, startRecord, stopRecord, startMask, stopMask).then(element => {
   // Initial Submit Data
   initialInfo.info = {
-    fullName: 'nima',
+    fullName: options.fullname,
     subject: 'text',
   };
   timerWrapper = element;
