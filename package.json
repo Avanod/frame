@@ -1,0 +1,26 @@
+{
+  "name": "avm-js",
+  "version": "1.0.0",
+  "description": "A simple way to share problems.",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Avanod/frame.git"
+  },
+  "keywords": [
+    "screen-record",
+    "share-screen"
+  ],
+  "author": "Avanod",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Avanod/frame/issues"
+  },
+  "homepage": "https://github.com/Avanod/frame#readme"
+}
