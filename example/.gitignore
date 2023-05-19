@@ -1,0 +1,10 @@
+.idea
+.vscode
+.DS_Store
+node_modules
+dist/css
+dist/js
+_
+package-lock.json
+*.rar
+*.zip
