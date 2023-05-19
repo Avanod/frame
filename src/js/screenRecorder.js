@@ -48,7 +48,7 @@ class ScreenRecorder {
       Observable.fire('stopped');
       // Test of File
       saveData(recordedBlob);
-      console.log(`Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
+      console.info(`[avm-js] Successfully recorded ${recordedBlob.size} bytes of ${recordedBlob.type} media.`);
     });
   };
   // Stop recording function
@@ -77,9 +77,9 @@ class ScreenRecorder {
       return true;
     }).catch((error) => {
       if (error.name === 'NotFoundError') {
-        console.log('Camera or microphone not found. Can\'t record.');
+        console.error('Camera or microphone not found. Can\'t record.');
       } else {
-        console.log(error);
+        console.error(error);
       }
     });
   };

@@ -11,7 +11,7 @@ const addFontFace = () => {
   link.setAttribute('href', 'https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
   document.head.appendChild(link);
   return true;
-}
+};
 const createFade = () => {
   fade.style.position = 'fixed';
   fade.style.inset = '0 0 0 0';
@@ -39,7 +39,7 @@ const createModal = () => {
 const createHeader = () => {
   header.style.padding = '26px 30px';
   header.style.display = 'flex';
-  header.style.justifyContent = 'space-between'
+  header.style.justifyContent = 'space-between';
   modal.appendChild(header);
   return header;
 };
@@ -62,7 +62,7 @@ const createContent = () => {
   modal.appendChild(content);
   return content;
 };
-const initialModal = async () => {
+const init = async () => {
   const initialFontFace = new Promise((resolve) => resolve(addFontFace()));
   const initialFade = new Promise((resolve) => resolve(createFade()));
   const initialModal = new Promise((resolve) => resolve(createModal()));
@@ -71,7 +71,7 @@ const initialModal = async () => {
   const initialContent = new Promise((resolve) => resolve(createContent()));
   return Promise.all([initialContent, initialFontFace, initialHeader, initialFade, initialModal, initialCloseButton]);
 };
-const init = async () => new Promise(resolve => initialModal().then(response => resolve(response[0])));
+const initialModal = async () => new Promise(resolve => init().then(response => resolve(response[0])));
 export const showModal = () => {
   body.style.overflow = 'hidden';
   fade.style.display = 'block';
@@ -80,9 +80,11 @@ export const hideModal = () => {
   body.removeAttribute('overflow');
   fade.remove();
   modal.remove();
+  header.innerHTML = '';
   header.remove();
   closeButton.remove();
+  content.innerHTML = '';
   content.remove();
 };
 export const addTitle = (title) => header.insertBefore(title, closeButton);
-export default init;
+export default initialModal;
