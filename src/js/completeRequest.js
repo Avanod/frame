@@ -1,4 +1,5 @@
-import init, {addTitle, hideModal, showModal} from './modal.js';
+import init, {addTitle, showModal} from './modal.js';
+import {avatarIcon, submitIcon} from './svg.js';
 
 const storeValues = {};
 
@@ -7,12 +8,9 @@ const onChangeValue = (event) => {
   storeValues[name] = value;
   console.log({name, value});
 };
-
-const completeRequest = ({fullName, subject}, onSubmit) => {
-  storeValues['fullName'] = fullName;
-  storeValues['subject'] = subject;
+const completeRequest = ({fullName, email, avatar}, onSubmit) => {
   init().then((modalContent) => {
-    createModalContent({fullName, subject}, onSubmit).then(([content, title, footer]) => {
+    createModalContent({fullName, email, avatar}, onSubmit).then(([content, title, footer]) => {
       modalContent.appendChild(content).appendChild(footer);
       addTitle(title);
       showModal();
@@ -20,58 +18,50 @@ const completeRequest = ({fullName, subject}, onSubmit) => {
   });
 };
 // Modal Sections
-const createModalContent = async ({fullName, subject}, onSubmit) => {
-  const content = new Promise((resolve) => resolve(createContent({fullName, subject})));
+const createModalContent = async ({fullName, email, avatar}, onSubmit) => {
+  const content = new Promise((resolve) => resolve(createContent({fullName, email, avatar})));
   const title = new Promise((resolve) => resolve(createTitle()));
   const footer = new Promise((resolve) => resolve(createFooter(onSubmit)));
   return Promise.all([content, title, footer]);
 };
-const createContent = ({fullName, subject}) => {
-  // System Description
+const createContent = ({fullName, email, avatar}) => {
   const content = document.createElement('div');
-  const p = document.createElement('p');
-  p.innerText = 'لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد.';
-  content.appendChild(p);
-  content.appendChild(createForm({fullName, subject}));
+  content.appendChild(createForm({fullName, email, avatar}));
   return content;
 };
 const createTitle = () => {
-  const title = document.createElement('h4');
-  title.innerText = 'ارسال گزارش خطا یا پیشنهاد بهبود سیستم';
+  const title = document.createElement('h1');
+  title.style.fontSize = '20px';
+  title.innerText = 'ارسال بازخورد';
   return title;
 };
 const createFooter = (onSubmit) => {
   const footer = document.createElement('div');
   footer.style.display = 'flex';
-  footer.style.justifyContent = 'space-between';
+  footer.style.justifyContent = 'flex-end';
   // Button Element
   const button = document.createElement('button');
   button.style.textAlign = 'center';
   button.style.whiteSpace = 'nowrap';
   button.style.padding = '0.375rem 0.75rem';
   button.style.color = '#FFF';
-  // Reject Button
-  const rejectButton = button.cloneNode(true);
-  rejectButton.innerText = 'انصراف';
-  rejectButton.style.backgroundColor = '#DC3545';
-  rejectButton.style.border = '1px solid #dc3545';
-  rejectButton.onclick = () => {
-    hideModal();
-    onSubmit(undefined);
-  };
   // Accept Button
   const acceptButton = button.cloneNode(true);
-  acceptButton.innerText = 'ارسال';
-  acceptButton.style.backgroundColor = '#007BFF';
-  acceptButton.style.border = '1px solid #007bff';
+  const acceptButtonText = document.createElement('span');
+  const acceptButtonIcon = document.createElement('span');
+  acceptButtonText.innerText = 'ارسال بازخورد';
+  acceptButtonIcon.innerHTML = submitIcon;
+  acceptButton.appendChild(acceptButtonText);
+  acceptButton.appendChild(acceptButtonIcon);
+  acceptButton.style.backgroundColor = '#3A86F2';
+  acceptButton.style.border = '1px solid #3A86F2';
+  acceptButton.style.borderRadius = '10px';
   acceptButton.onclick = () => onSubmit(storeValues);
-  // Append buttons to footer
-  footer.appendChild(rejectButton);
   footer.appendChild(acceptButton);
   return footer;
 };
 // Form and Inputs
-const createInput = (row, col, inputLabel, label, name, initialValue) => {
+const createInput = (row, col, inputLabel, label, name, initialValue, hasPlaceholder) => {
   // Input
   const input = document.createElement('input');
   //// Input styles
@@ -81,9 +71,20 @@ const createInput = (row, col, inputLabel, label, name, initialValue) => {
   input.setAttribute('id', name);
   input.setAttribute('name', name);
   input.setAttribute('type', 'text');
-  input.setAttribute('placeholder', label);
+  if (hasPlaceholder) input.setAttribute('placeholder', label);
+  input.style.border = '1px solid #E1E1E1';
+  input.style.borderRadius = '6px';
+  input.style.outline = 'none';
+  input.style.height = '36px';
+  input.style.lineHeight = '36px';
+  input.style.on = '36px';
   input.onchange = onChangeValue;
   if (initialValue) input.value = initialValue;
+
+  input.addEventListener('focus', function () {
+    this.style.borderColor = '#5150AE';
+  });
+
   // Label
   inputLabel.innerText = label;
   inputLabel.setAttribute('for', name);
@@ -93,34 +94,129 @@ const createInput = (row, col, inputLabel, label, name, initialValue) => {
   // Col append to wrapper
   row.appendChild(col);
 };
-const createSelect = (row, col, selectLabel, options, label, name) => {
-  // Select
-  const select = document.createElement('select');
-  //// Select styles
-  select.style.width = '100%';
-  select.style.height = '2rem';
-  //// Select property
-  select.setAttribute('id', name);
-  select.setAttribute('name', name);
-  select.onchange = onChangeValue;
-  // Options
-  const option = document.createElement('option');
-  options.forEach(item => {
-    const clone = option.cloneNode(true);
-    clone.value = item.value;
-    clone.innerText = item.label;
-    select.appendChild(clone);
+/*const createSelect = (row, col, selectLabel, options, label, name) => {
+ // Select
+ const select = document.createElement('select');
+ //// Select styles
+ select.style.width = '100%';
+ select.style.height = '2rem';
+ //// Select property
+ select.setAttribute('id', name);
+ select.setAttribute('name', name);
+ select.onchange = onChangeValue;
+ // Options
+ const option = document.createElement('option');
+ options.forEach(item => {
+ const clone = option.cloneNode(true);
+ clone.value = item.value;
+ clone.innerText = item.label;
+ select.appendChild(clone);
+ });
+ // Label
+ selectLabel.innerText = label;
+ selectLabel.setAttribute('for', name);
+ // Select and Label append to col
+ col.appendChild(selectLabel);
+ col.appendChild(select);
+ // Col append to wrapper
+ row.appendChild(col);
+ };*/
+const createRadio = (row, col, options, active, label, name) => {
+
+  // Create label
+  const span = document.createElement('span');
+  const groupLabel = span.cloneNode(true);
+  groupLabel.innerText = `${label}:`;
+  groupLabel.style.display = 'inline-block';
+  groupLabel.style.marginLeft = '10px';
+
+  // Create radio input
+  const input = document.createElement('input');
+  input.setAttribute('type', 'radio');
+  input.setAttribute('name', name);
+  input.style.visibility = 'hidden';
+  input.style.position = 'absolute';
+
+  // Create radio label
+  const radioLabel = document.createElement('label');
+  radioLabel.style.marginLeft = '10px';
+  radioLabel.style.height = '24px';
+  radioLabel.style.border = `1px solid #D0D0D0`;
+  radioLabel.style.padding = '0 8px';
+  radioLabel.style.lineHeight = '24px';
+  radioLabel.style.borderRadius = '6px';
+  radioLabel.style.fontSize = '80%';
+  radioLabel.style.display = 'inline-flex';
+  radioLabel.style.alignItems = 'center';
+
+  // Create badge
+  const badge = span.cloneNode(true);
+  badge.style.display = 'inline-block';
+  badge.style.height = '8px';
+  badge.style.width = '8px';
+  badge.style.borderRadius = '50%';
+
+  // Wrapper
+  const div = document.createElement('div');
+  div.style.display = 'flex';
+  div.style.alignItems = 'center';
+  div.style.position = 'relative';
+  div.appendChild(groupLabel);
+
+  // Reset all label styles to default
+  const resetLabelsStyle = () => {
+    options.forEach((item) => {
+      const label = document.querySelector(`label[for="id-${name}-${item.value}"]`);
+      label.style.borderColor = '#D0D0D0';
+    });
+  };
+  const changeLabelStyle = (input, label) => {
+    if (input.checked) {
+      label.style.borderColor = '#5150AE';
+    } else {
+      label.style.borderColor = '#D0D0D0';
+    }
+  };
+
+  options.forEach((item, index) => {
+
+    const cloneInput = input.cloneNode(true);
+    cloneInput.value = item.value;
+    cloneInput.setAttribute('id', `id-${name}-${item.value}`);
+
+    const cloneLabel = radioLabel.cloneNode(true);
+
+    if (item.color) {
+      const cloneBadge = badge.cloneNode(true);
+      cloneBadge.style.backgroundColor = item.color;
+      cloneBadge.style.marginLeft = '5px';
+      cloneLabel.appendChild(cloneBadge);
+    }
+
+    if (index === active ?? 0) {
+      cloneInput.setAttribute('checked', 'checked');
+      cloneLabel.style.borderColor = '#5150AE';
+    }
+
+    const cloneSpan = span.cloneNode(true);
+    cloneSpan.innerText = item.label;
+
+    cloneLabel.appendChild(cloneSpan);
+    cloneLabel.setAttribute('for', `id-${name}-${item.value}`);
+
+    div.appendChild(cloneInput);
+    div.appendChild(cloneLabel);
+    cloneInput.onclick = () => {
+      resetLabelsStyle();
+      changeLabelStyle(cloneInput, cloneLabel);
+    };
   });
-  // Label
-  selectLabel.innerText = label;
-  selectLabel.setAttribute('for', name);
-  // Select and Label append to col
-  col.appendChild(selectLabel);
-  col.appendChild(select);
+
+  col.appendChild(div);
   // Col append to wrapper
   row.appendChild(col);
 };
-const createTextArea = (row, col, textAreaLabel, label, name) => {
+const createTextArea = (row, col, textAreaLabel, label, name, hasPlaceholder) => {
   // TextArea
   const textArea = document.createElement('textarea');
   //// TextArea styles
@@ -128,9 +224,17 @@ const createTextArea = (row, col, textAreaLabel, label, name) => {
   //// TextArea property
   textArea.setAttribute('id', name);
   textArea.setAttribute('name', name);
-  textArea.setAttribute('rows', '4');
-  textArea.setAttribute('placeholder', label);
+  textArea.setAttribute('rows', '6');
+  if (hasPlaceholder) textArea.setAttribute('placeholder', label);
+  textArea.style.border = '1px solid #E1E1E1';
+  textArea.style.borderRadius = '6px';
+  textArea.style.outline = 'none';
   textArea.onchange = onChangeValue;
+
+  textArea.addEventListener('focus', function () {
+    this.style.borderColor = '#5150AE';
+  });
+
   // Label
   textAreaLabel.innerText = label;
   textAreaLabel.setAttribute('for', name);
@@ -140,7 +244,87 @@ const createTextArea = (row, col, textAreaLabel, label, name) => {
   // Col append to wrapper
   row.appendChild(col);
 };
-const createForm = ({fullName, subject}) => {
+const createSenderInformation = (row, col, label, {fullName, avatar, email}) => {
+  const div = document.createElement('div');
+  div.style.marginBottom = '1rem';
+  div.style.display = 'flex';
+  div.style.alignItems = 'center';
+  const span = document.createElement('span');
+  // Label
+  const labelSpan = span.cloneNode(true);
+  labelSpan.innerText = label + ':';
+  labelSpan.style.display = 'inline-block';
+  labelSpan.style.marginLeft = '15px';
+  // Avatar
+  const localAvatar = avatarIcon;
+  const img = document.createElement('img');
+  img.setAttribute('alt', 'avatar');
+  img.setAttribute('width', '36');
+  img.setAttribute('height', '36');
+  img.setAttribute('src', avatar ?? 'data:image/svg+xml;base64,' + btoa(localAvatar));
+  img.style.borderRadius = '50%';
+  img.style.marginLeft = '15px';
+  // Information
+  const infoSpan = span.cloneNode(true);
+  infoSpan.style.display = 'inline-flex';
+  infoSpan.style.flexDirection = 'column';
+  // Full name
+  const fullNameSpan = span.cloneNode(true);
+  fullNameSpan.style.fontSize = '11px';
+  fullNameSpan.style.color = '#7B7B7B';
+  fullNameSpan.innerText = fullName;
+  // Email
+  const emailSpan = span.cloneNode(true);
+  emailSpan.innerText = email;
+  emailSpan.style.fontSize = '12px';
+
+  infoSpan.appendChild(emailSpan);
+  infoSpan.appendChild(fullNameSpan);
+
+  div.appendChild(labelSpan);
+  div.appendChild(img);
+  div.appendChild(infoSpan);
+
+  col.appendChild(div);
+  row.appendChild(col);
+};
+const createRadioWrapper = (row, col) => {
+  const div = document.createElement('div');
+  const container = div.cloneNode(true);
+  const wrapper = div.cloneNode(true);
+  wrapper.style.display = 'flex';
+  wrapper.style.alignItems = 'center';
+  wrapper.style.justifyContent = 'space-between';
+  const innerCol = div.cloneNode(true);
+
+  // kind
+  //// Bug: 1
+  const kindOptions = [
+    {label: 'باگ', value: '1', color: '#EF0303'},
+    {label: 'گزارش', value: '2', color: '#0fe800'},
+  ];
+  // createSelect(row, col.cloneNode(true), inputLabel.cloneNode(true), options, 'اولویت', 'priority');
+  createRadio(wrapper, innerCol.cloneNode(true), kindOptions, 0, 'نوع بازخورد', 'kind');
+
+  // Priority
+  //// highest: 1
+  //// high: 2
+  //// medium: 3
+  //// low: 4
+  //// lowest: 5
+  //// critical: 6
+  const priorityOptions = [
+    {label: 'کم', value: '4', color: '#F79008'},
+    {label: 'متوسط', value: '3', color: '#2A70FE'},
+    {label: 'زیاد', value: '2', color: '#E14EB6'},
+  ];
+  createRadio(wrapper, innerCol.cloneNode(true), priorityOptions, 1, 'اولویت', 'priority');
+  container.appendChild(wrapper);
+  col.appendChild(container);
+  // Col append to wrapper
+  row.appendChild(col);
+};
+const createForm = ({fullName, email, avatar}) => {
   // Wrapper
   const wrapper = document.createElement('div');
   //// Wrapper styles
@@ -168,36 +352,27 @@ const createForm = ({fullName, subject}) => {
   col.style.maxWidth = '100%';
   col.style.flexGrow = '1';
   col.style.flexBasis = '0';
-  col.style.marginBottom = '.5rem';
-  // Input Label
-  const inputLabel = document.createElement('label');
-  //// Input Label styles
-  inputLabel.style.marginBottom = '.5rem';
-  // Full name
-  createInput(row, col.cloneNode(true), inputLabel.cloneNode(true), 'نام و نام‌خانوادگی', 'fullName', fullName);
-  // Subject
-  createInput(row, col.cloneNode(true), inputLabel.cloneNode(true), 'موضوع', 'subject', subject);
-  // Priority
-  //// highest: 1
-  //// high: 2
-  //// medium: 3
-  //// low: 4
-  //// lowest: 5
-  //// critical: 6
-  const options = [
-    {label: 'خیلی زیاد', value: '1'},
-    {label: 'زیاد', value: '2'},
-    {label: 'معمولی', value: '3'},
-    {label: 'پایین', value: '4'},
-    {label: 'خیلی پایین', value: '5'},
-    {label: 'بحرانی', value: '6'},
-  ];
-  createSelect(row, col.cloneNode(true), inputLabel.cloneNode(true), options, 'اولویت', 'priority');
+  col.style.marginBottom = '1rem';
   // Divider
   const divider = document.createElement('div');
   //// Divider styles
   divider.style.width = '100%';
-  row.appendChild(divider);
+  // Input Label
+  const inputLabel = document.createElement('label');
+  //// Input Label styles
+  inputLabel.style.marginBottom = '.5rem';
+  // Create sender information
+  createSenderInformation(row, col.cloneNode(true), 'فرستنده', {
+    fullName,
+    avatar,
+    email,
+  });
+  row.appendChild(divider.cloneNode(true));
+  createRadioWrapper(row, col.cloneNode(true));
+  row.appendChild(divider.cloneNode(true));
+  // Subject
+  createInput(row, col.cloneNode(true), inputLabel.cloneNode(true), 'موضوع', 'subject', '');
+  row.appendChild(divider.cloneNode(true));
   // Description
   createTextArea(row, col.cloneNode(true), inputLabel.cloneNode(true), 'توضیحات', 'description');
   return wrapper;

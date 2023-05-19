@@ -3,14 +3,18 @@ import {hideModal} from './modal.js';
 
 export const initialInfo = {
   store: {
-    fullName: undefined,
-    subject: undefined,
+    fullName: 'نیما کاویانی',
+    email: 'n.kaviyani@asax.ir',
   },
   get info() {
     return this.store;
   },
   set info(info) {
-    this.store = info ?? {};
+    this.store = info ?? {
+      fullName: undefined,
+      email: undefined,
+      avatar: undefined,
+    };
   },
 };
 
@@ -60,7 +64,6 @@ const request = async (recordedBlob, values) => {
 };
 
 const saveData = (function () {
-  // completeRequest(initialInfo.info, (values) => values && request(undefined, undefined, values));
   // const a = document.createElement('a');
   // document.body.appendChild(a);
   // a.style.display = 'none';
