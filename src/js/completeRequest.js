@@ -1,4 +1,4 @@
-import init, {addTitle, showModal} from './modal.js';
+import initialModal , {addTitle, showModal} from './modal.js';
 import {avatarIcon, submitIcon} from './svg.js';
 
 const storeValues = {};
@@ -9,7 +9,7 @@ const onChangeValue = (event) => {
   console.log({name, value});
 };
 const completeRequest = ({fullName, email, avatar}, onSubmit) => {
-  init().then((modalContent) => {
+  initialModal().then((modalContent) => {
     createModalContent({fullName, email, avatar}, onSubmit).then(([content, title, footer]) => {
       modalContent.appendChild(content).appendChild(footer);
       addTitle(title);

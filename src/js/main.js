@@ -25,7 +25,7 @@ class avmJSBuilder {
       console.error('Start button not set.');
       return;
     }
-    console.info('AVM JS is initialized!');
+    console.info('[avm-js] Package is initialized!');
 
     this.options = options;
     this.startButton = document.getElementById(startButtonId);
@@ -47,13 +47,13 @@ class avmJSBuilder {
   startRecording() {
     Observable.subscribe(this.clearElements.bind(this));
     this.screenRecorder.start().then(() => {
-      console.info('Record is started');
+      console.info('[avm-js] Record is started');
       runTimer(this.timerWrapper, this.observeTime.bind(this));}
     );
   }
 
   stopRecording() {
-    console.info('Record is stopped!');
+    console.info('[avm-js] Record is stopped!');
     this.screenRecorder.stopRecording();
   }
 

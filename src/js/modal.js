@@ -62,7 +62,7 @@ const createContent = () => {
   modal.appendChild(content);
   return content;
 };
-const initialModal = async () => {
+const init = async () => {
   const initialFontFace = new Promise((resolve) => resolve(addFontFace()));
   const initialFade = new Promise((resolve) => resolve(createFade()));
   const initialModal = new Promise((resolve) => resolve(createModal()));
@@ -71,12 +71,13 @@ const initialModal = async () => {
   const initialContent = new Promise((resolve) => resolve(createContent()));
   return Promise.all([initialContent, initialFontFace, initialHeader, initialFade, initialModal, initialCloseButton]);
 };
-const init = async () => new Promise(resolve => initialModal().then(response => resolve(response[0])));
+const initialModal = async () => new Promise(resolve => init().then(response => resolve(response[0])));
 export const showModal = () => {
   body.style.overflow = 'hidden';
   fade.style.display = 'block';
 };
 export const hideModal = () => {
+  console.log('here')
   body.removeAttribute('overflow');
   fade.remove();
   modal.remove();
@@ -85,4 +86,4 @@ export const hideModal = () => {
   content.remove();
 };
 export const addTitle = (title) => header.insertBefore(title, closeButton);
-export default init;
+export default initialModal;

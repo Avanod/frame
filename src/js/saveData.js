@@ -3,8 +3,10 @@ import {hideModal} from './modal.js';
 
 export const initialInfo = {
   store: {
-    fullName: 'نیما کاویانی',
-    email: 'n.kaviyani@asax.ir',
+    fullName: null,
+    email: null,
+    avatar: null,
+    requestUrl: null,
   },
   get info() {
     return this.store;
@@ -14,6 +16,7 @@ export const initialInfo = {
       fullName: undefined,
       email: undefined,
       avatar: undefined,
+      requestUrl: undefined,
     };
   },
 };
