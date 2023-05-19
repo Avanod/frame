@@ -14,6 +14,10 @@ export default {
     filename: "js/[name].js",
     path: path.resolve(process.cwd(), "./public"),
   },
+  output: {
+    filename: "index.js",
+    path: path.resolve(process.cwd(), "./../"),
+  },
 
   // Define development options
   devtool: "source-map",
