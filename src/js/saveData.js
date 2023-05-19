@@ -21,7 +21,19 @@ export const initialInfo = {
   },
 };
 
-const request = async (recordedBlob, values) => {
+function formatBytes(bytes, decimals = 2) {
+  if (!+bytes) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
+function createName() {
   const now = new Date();
   const yyyy = now.getFullYear();
   let mm = now.getMonth() + 1; // Months start at 0!
@@ -35,8 +47,12 @@ const request = async (recordedBlob, values) => {
   if (HH < 10) HH = `0${HH}`;
   if (MM < 10) MM = `0${MM}`;
   if (SS < 10) SS = `0${SS}`;
+  return `${yyyy}-${mm}-${dd}_-_${HH}:${MM}:${SS}`;
+}
 
-  const fileName = `${yyyy}/${mm}/${dd}-${HH}:${MM}:${SS}`;
+const fileName = createName();
+
+const request = async (recordedBlob, values) => {
 
   const file = new File([recordedBlob], fileName);
   const formData = new FormData();
@@ -49,7 +65,7 @@ const request = async (recordedBlob, values) => {
 
   const requestBody = {
     ...values,
-    file: `${fileName}.webm`,
+    file: `${fileName}.mp4`,
   };
   console.log({recordedBlob});
   console.log({requestBody});
@@ -67,17 +83,9 @@ const request = async (recordedBlob, values) => {
 };
 
 const saveData = (function () {
-  // const a = document.createElement('a');
-  // document.body.appendChild(a);
-  // a.style.display = 'none';
   return function (recordedBlob) {
-    completeRequest(initialInfo.info, (values) => values && request(recordedBlob, values));
-    // const url = URL.createObjectURL(recordedBlob);
-    // a.href = url;
-    // // Name of downloaded file
-    // a.download = `${fileName}.webm`;
-    // a.click();
-    // window.URL.revokeObjectURL(url);
+    const fileSize = formatBytes(recordedBlob.size, 2);
+    completeRequest(initialInfo.info, {fileSize, fileName}, (values) => values && request(recordedBlob, values));
   };
 }());
 
