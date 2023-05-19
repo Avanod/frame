@@ -92,7 +92,7 @@ const finalizedElements = async () => {
     recordingButton.style.opacity = '0';
     recordingButton.style.transition = 'all .3s ease';
     recordingButton.style.position = 'absolute';
-    recordingButton.style.left = '-20px';
+    recordingButton.style.right = '-20px';
     recordingButton.style.lineHeight = '1';
     recordingButton.innerHTML = recordingIcon;
     timerWrapper.appendChild(recordingButton);
@@ -266,6 +266,7 @@ export const createElement = async (closeElement, startRecord, stopRecord, start
   return new Promise((resolve) => finalizedElements().then(response => resolve(response[0])));
 };
 export const destroyElement = () => {
+  clearInterval(blinkIntervalId);
   wrapper.remove();
   timerWrapper.remove();
   timerElement.remove();
