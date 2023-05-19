@@ -217,7 +217,7 @@ const finalizedElements = async () => {
     initWrapper,
 
     initTimerWrapper,
-    initTimer,
+    initTimer, // index[2] for resolve
 
     initRecordingButton,
 
