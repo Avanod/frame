@@ -1,6 +1,9 @@
 import initialModal, {addTitle, showModal} from './modal.js';
 import {attachmentIcon, avatarIcon, submitIcon} from './svg.js';
 
+/* todo add validation for form */
+/* todo add loading for submit button */
+
 const storeValues = {};
 
 const onChangeValue = (event) => {

@@ -1,6 +1,7 @@
 import completeRequest from './completeRequest.js';
 import {hideModal} from './modal.js';
 
+/* todo move store to separate file */
 export const initialInfo = {
   store: {
     fullName: null,
